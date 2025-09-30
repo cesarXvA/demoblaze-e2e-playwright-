@@ -1,1 +1,13 @@
-
+{
+  "name": "demoblaze-e2e-playwright",
+  "version": "1.0.0",
+  "description": "Prueba técnica: login, agregar al carrito y logout en demoblaze.com con Playwright.",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed --project=chromium",
+    "e2e": "playwright test tests/demoblaze.spec.js --project=chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0"
+  }
+}
