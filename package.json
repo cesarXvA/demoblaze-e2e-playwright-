@@ -5,7 +5,7 @@
   "scripts": {
     "test": "playwright test",
     "test:headed": "playwright test --headed --project=chromium",
-    "e2e": "playwright test tests/demoblaze.spec.js --project=chromium"
+    "e2e": "playwright test tests/demoblaze.spec.ts --project=chromium"
   },
   "devDependencies": {
     "@playwright/test": "^1.47.0"
