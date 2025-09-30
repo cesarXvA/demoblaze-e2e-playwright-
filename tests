@@ -1,1 +1,51 @@
+import { test, expect } from '@playwright/test';
+
+// Credenciales de la consigna (ojo con la mayúscula/minúscula del pass)
+const USER = 'ydtester';
+const PASS = '!YD05';
+
+test('Login -> agregar producto al carrito -> validar -> logout', async ({ page }) => {
+  // 1) Abrir sitio
+  await page.goto('/');
+
+  // 2) Login (abre modal y envía credenciales)
+  await page.click('#login2'); // botón "Log in" de la navbar
+  await expect(page.locator('#logInModal')).toBeVisible();
+
+  await page.fill('#loginusername', USER);
+  await page.fill('#loginpassword', PASS);
+  await page.click("button:has-text('Log in')");
+
+  // 3) Validar nombre arriba a la derecha (Welcome ydtester)
+  const welcome = page.locator('#nameofuser');
+  await expect(welcome).toBeVisible();
+  await expect(welcome).toContainText(`Welcome ${USER}`);
+
+  // 4) Entrar a una categoría y seleccionar un producto
+  // (ejemplo: Phones -> Samsung galaxy s6)
+  await page.click("a:has-text('Phones')");
+  await page.waitForLoadState('networkidle');
+  await page.click("a:has-text('Samsung galaxy s6')");
+
+  // 5) Agregar al carrito y aceptar alerta "Product added"
+  page.once('dialog', async dialog => {
+    // Debe decir "Product added"
+    expect(dialog.message()).toMatch(/Product added/i);
+    await dialog.accept();
+  });
+  await page.click("a:has-text('Add to cart')");
+
+  // 6) Ir al carrito y validar que el producto está listado
+  await page.click('#cartur'); // link "Cart" en navbar
+  await expect(page).toHaveURL(/.*cart\.html/);
+  await page.waitForSelector('#tbodyid tr');
+  const rows = page.locator('#tbodyid tr');
+  await expect(rows).toHaveCountGreaterThan(0);
+  await expect(page.locator('#tbodyid')).toContainText(/Samsung galaxy s6/i);
+
+  // 7) Logout
+  await page.click("a#logout2");
+  // Validar que volvió a aparecer el botón de login en navbar
+  await expect(page.locator('#login2')).toBeVisible();
+});
 
